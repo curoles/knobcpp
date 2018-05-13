@@ -1,8 +1,8 @@
 /**
  * @file
+ * @brief     Knob - constant with name 
  * @author    Igor Lesik
  * @copyright 2018 Igor Lesik
- * @brief     Knob - constant with name 
  *
  * Some programs (simulators) need many input "knobs" to set
  * desired configuration. Usually knobs are of very few types:
