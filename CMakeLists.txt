@@ -22,18 +22,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Add executable called "test_knobcpp".
-add_executable (test_knobcpp test.cpp)
-
-
-# Now we can do `make test`
-enable_testing()
-
-add_test(NAME test_knob
-    #[CONFIGURATIONS [Debug|Release|...]]
-    #[WORKING_DIRECTORY dir]
-    COMMAND test_knobcpp
+install(FILES knob.h
+    DESTINATION include/knobcpp
 )
+
+include(test/test.cmake)
+include(doc/doc.cmake)
 
 # ------------------------- Begin Generic CMake Variable Logging ------------------
 # https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/useful_variables/Logging-Useful-Variables

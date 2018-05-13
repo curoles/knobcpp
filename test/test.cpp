@@ -2,7 +2,7 @@
 #include <cassert>
 #include <type_traits>
 
-#include "knob.h"
+#include "../knob.h"
 
 using namespace knb;
 using namespace std::string_view_literals;
