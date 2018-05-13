@@ -14,7 +14,7 @@ constexpr StaticKnob luckyNumber{777};
 
 bool test_StaticKnob()
 {
-    static_assert((bool)featureXxxEnabled == true);
+    static_assert(featureXxxEnabled == true);
     if constexpr (featureXxxEnabled) {
     }
     else {
@@ -22,14 +22,20 @@ bool test_StaticKnob()
     }
 
     static_assert(pressureLimit.asFloat() < 20.1f);
-    if constexpr ((float)pressureLimit > 10.0f) {
+    if constexpr (pressureLimit > 10.0f) {
     }
+
+    static_assert(versionString == "0.1.1"sv);
+    static_assert(versionString != "2.3.4"sv);
 
     if constexpr (versionString.asString() == "0.1.1"sv) {
         std::cout << versionString.asString() << "=0.0.1" << std::endl;
     }
 
-    static_assert(luckyNumber.asInt() == 777);
+    static_assert(luckyNumber == 777);
+
+    constexpr StaticKnob devilNumber{666};
+    static_assert(devilNumber == 666);
 
     return true;
 }

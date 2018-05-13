@@ -108,6 +108,7 @@ public:
 
 };
 
+//TODO comment
 class StaticKnob final
 {
     std::variant<bool,int,float,cstr> v;
@@ -127,9 +128,30 @@ public:
     constexpr float asFloat()  const {return std::get<float>(v);}
     constexpr cstr  asString() const {return std::get<cstr>(v);}
 
-    constexpr explicit operator bool() const { return asBool(); }
-    constexpr explicit operator int() const { return asInt(); }
+    constexpr explicit operator bool()  const { return asBool(); }
+    constexpr explicit operator int()   const { return asInt(); }
     constexpr explicit operator float() const { return asFloat(); }
+
+
+    constexpr bool operator==(bool v) const {return asBool() == v;}
+    constexpr bool operator!=(bool v) const {return asBool() != v;}
+
+    constexpr bool operator==(int v) const {return asInt() == v;}
+    constexpr bool operator!=(int v) const {return asInt() != v;}
+    constexpr bool operator>=(int v) const {return asInt() >= v;}
+    constexpr bool operator<=(int v) const {return asInt() <= v;}
+    constexpr bool operator> (int v) const {return asInt() >  v;}
+    constexpr bool operator< (int v) const {return asInt() <  v;}
+
+    constexpr bool operator==(float v) const {return asFloat() == v;}
+    constexpr bool operator!=(float v) const {return asFloat() != v;}
+    constexpr bool operator>=(float v) const {return asFloat() >= v;}
+    constexpr bool operator<=(float v) const {return asFloat() <= v;}
+    constexpr bool operator> (float v) const {return asFloat() >  v;}
+    constexpr bool operator< (float v) const {return asFloat() <  v;}
+
+    constexpr bool operator==(strv v) const {return asString() == v;}
+    constexpr bool operator!=(strv v) const {return asString() != v;}
 };
 
 }
