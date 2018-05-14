@@ -79,14 +79,14 @@ class StaticKnob final
 
 public:
     constexpr std::size_t typeId() const {return v.index();}
-    StaticKnob::T type() const {return static_cast<StaticKnob::T>(v.index());}
+    constexpr StaticKnob::T type() const {return static_cast<StaticKnob::T>(v.index());}
 
 public:
     // Overloaded ctor defines type and value of the knob.
-    constexpr StaticKnob(bool  b):v(b){}
-    constexpr StaticKnob(int   i):v(i){}
-    constexpr StaticKnob(float f):v(f){}
-    constexpr StaticKnob(cstr  s):v(s){}
+    constexpr StaticKnob(bool  b):v(b){} ///< Construct `bool` knob
+    constexpr StaticKnob(int   i):v(i){} ///< Construct `int` knob
+    constexpr StaticKnob(float f):v(f){} ///< Construct `float` knob
+    constexpr StaticKnob(cstr  s):v(s){} ///< Construct `string` knob
 
 public:
     constexpr bool  asBool()   const {return std::get<bool>(v);}

@@ -87,6 +87,20 @@ bool test_StaticKnob_array()
     return true;
 }
 
+bool test_StaticKnob_group()
+{
+    enum {enabled=0, version, value};
+    constexpr StaticKnob featureX[]={{true},{"1.2.3"},{1234}};
+
+    if constexpr (featureX[enabled] and featureX[version] == "1.2.3"sv) {
+        static_assert(featureX[value] == 1234);
+    } else {
+        assert(false);//should not be here
+    }
+
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
     if (auto ok=test_StaticKnob_libraryVersion(); !ok) return 1;
@@ -96,6 +110,7 @@ int main(int argc, char* argv[])
     if (auto ok=test_StaticKnob_float(); !ok) return 1;
     if (auto ok=test_StaticKnob_string(); !ok) return 1;
     if (auto ok=test_StaticKnob_array(); !ok) return 1;
+    if (auto ok=test_StaticKnob_group(); !ok) return 1;
 
     return 0;
 }

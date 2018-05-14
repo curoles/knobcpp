@@ -25,3 +25,24 @@ KnobCpp provides following facilities:
     to be used in '`if constexpr (...`' and '`static_assert`'.
  2. [Knob](@ref knb::Knob) - Run Time configuration constant.
 
+
+## StaticKnob
+
+Use StaticKnob instead of `constexpr` variable when:
+ 1. You want to say explicitly that it is "knob".
+ 2. When you have .h file with many parameters that serve
+    similar purpose.
+ 3. You want to combine knobs in logical groups. See example below.
+
+```cpp
+bool some_function()
+{
+    enum {enabled, version, value};
+    constexpr StaticKnob featureX[]={{true},{"1.2.3"},{1234}};
+
+    if constexpr (featureX[enabled] and featureX[version] == "1.2.3"sv) {
+        // use featureX[value]
+    }
+```
+
+## Knob
