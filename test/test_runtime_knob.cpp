@@ -12,34 +12,6 @@ constexpr StaticKnob pressureLimit{20.0f};
 constexpr StaticKnob versionString{"0.1.1"};
 constexpr StaticKnob luckyNumber{777};
 
-bool test_StaticKnob()
-{
-    static_assert(featureXxxEnabled == true);
-    if constexpr (featureXxxEnabled) {
-    }
-    else {
-        assert(1==2);
-    }
-
-    static_assert(pressureLimit.asFloat() < 20.1f);
-    if constexpr (pressureLimit > 10.0f) {
-    }
-
-    static_assert(versionString == "0.1.1"sv);
-    static_assert(versionString != "2.3.4"sv);
-
-    if constexpr (versionString.asString() == "0.1.1"sv) {
-        std::cout << versionString.asString() << "=0.0.1" << std::endl;
-    }
-
-    static_assert(luckyNumber == 777);
-
-    constexpr StaticKnob devilNumber{666};
-    static_assert(devilNumber == 666);
-
-    return true;
-}
-
 bool test_KnobBool()
 {
     Knob k1{"k1",true};
@@ -58,7 +30,6 @@ int main(int argc, char* argv[])
     static_assert(std::is_copy_constructible<std::string>::value == true);
     static_assert(std::is_copy_constructible<knb::Knob>::value == true);
 
-    if (auto ok=test_StaticKnob(); !ok) return 1;
     if (auto ok=test_KnobBool();   !ok) return 1;
 
     knb::Knob k1{"k1",true};

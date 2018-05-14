@@ -1,13 +1,19 @@
-# Add executable called "test_knobcpp".
-add_executable (test_knob test/test.cpp)
+add_executable (test_static_knob test/test_static_knob.cpp)
+add_executable (test_runtime_knob test/test_runtime_knob.cpp)
 
 
-# Now we can do `make test`
+# After enablig testing we can do `make test`
 enable_testing()
 
-add_test(NAME test_knob
+add_test(NAME test_static_knob
     #[CONFIGURATIONS [Debug|Release|...]]
     #[WORKING_DIRECTORY dir]
-    COMMAND test_knob
+    COMMAND test_static_knob
+)
+
+add_test(NAME test_runtime_knob
+    #[CONFIGURATIONS [Debug|Release|...]]
+    #[WORKING_DIRECTORY dir]
+    COMMAND test_runtime_knob
 )
 

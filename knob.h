@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <variant>
 
+#include "static_knob.h"
+
 namespace knb {
 
 using str = std::string;
@@ -62,19 +64,27 @@ public:
     float asFloat() const {return std::get<float>(v);}
     str asString() const {
         switch (type()){
-        case T::Bool:  return (asBool()==true)? "true":"false";
-        case T::Int:   return std::to_string(asInt());
-        case T::Float: return std::to_string(asFloat()); 
+        case T::Bool:   return (asBool()==true)? "true":"false";
+        case T::Int:    return std::to_string(asInt());
+        case T::Float:  return std::to_string(asFloat());
+        case T::String: return std::get<str>(v); 
         }
         return std::get<str>(v);
     }
 
-    bool operator<(const Knob& other)const{return this->v < other.v;}
-    bool operator<=(const Knob& other)const{return this->v <= other.v;}
-    bool operator>(const Knob& other)const{return this->v > other.v;}
-    bool operator>=(const Knob& other)const{return this->v >= other.v;}
-    bool operator==(const Knob& other)const{return this->v == other.v;}
-    bool operator!=(const Knob& other)const{return this->v != other.v;}
+    explicit operator bool()  const { return asBool(); }
+    explicit operator int()   const { return asInt(); }
+    explicit operator float() const { return asFloat(); }
+
+    bool operator< (const Knob& other)const {return this->v <  other.v;}
+    bool operator<=(const Knob& other)const {return this->v <= other.v;}
+    bool operator> (const Knob& other)const {return this->v >  other.v;}
+    bool operator>=(const Knob& other)const {return this->v >= other.v;}
+    bool operator==(const Knob& other)const {return this->v == other.v;}
+    bool operator!=(const Knob& other)const {return this->v != other.v;}
+
+    bool operator==(bool v) const {return asBool() == v;}
+    bool operator!=(bool v) const {return asBool() != v;}
 
 };
 
@@ -108,51 +118,6 @@ public:
 
 };
 
-//TODO comment
-class StaticKnob final
-{
-    std::variant<bool,int,float,cstr> v;
-    enum class T : std::size_t { Bool=0, Int, Float, String };
-
-    constexpr std::size_t typeId() const {return v.index();}
-
-public:
-    constexpr StaticKnob(bool  b):v(b){}
-    constexpr StaticKnob(int   i):v(i){}
-    constexpr StaticKnob(float f):v(f){}
-    constexpr StaticKnob(cstr  s):v(s){}
-
-public:
-    constexpr bool  asBool()   const {return std::get<bool>(v);}
-    constexpr int   asInt()    const {return std::get<int>(v);}
-    constexpr float asFloat()  const {return std::get<float>(v);}
-    constexpr cstr  asString() const {return std::get<cstr>(v);}
-
-    constexpr explicit operator bool()  const { return asBool(); }
-    constexpr explicit operator int()   const { return asInt(); }
-    constexpr explicit operator float() const { return asFloat(); }
-
-
-    constexpr bool operator==(bool v) const {return asBool() == v;}
-    constexpr bool operator!=(bool v) const {return asBool() != v;}
-
-    constexpr bool operator==(int v) const {return asInt() == v;}
-    constexpr bool operator!=(int v) const {return asInt() != v;}
-    constexpr bool operator>=(int v) const {return asInt() >= v;}
-    constexpr bool operator<=(int v) const {return asInt() <= v;}
-    constexpr bool operator> (int v) const {return asInt() >  v;}
-    constexpr bool operator< (int v) const {return asInt() <  v;}
-
-    constexpr bool operator==(float v) const {return asFloat() == v;}
-    constexpr bool operator!=(float v) const {return asFloat() != v;}
-    constexpr bool operator>=(float v) const {return asFloat() >= v;}
-    constexpr bool operator<=(float v) const {return asFloat() <= v;}
-    constexpr bool operator> (float v) const {return asFloat() >  v;}
-    constexpr bool operator< (float v) const {return asFloat() <  v;}
-
-    constexpr bool operator==(strv v) const {return asString() == v;}
-    constexpr bool operator!=(strv v) const {return asString() != v;}
-};
 
 }
 
