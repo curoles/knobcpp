@@ -24,6 +24,8 @@ KnobCpp provides following facilities:
  1. [StaticKnob](@ref knb::StaticKnob) - Compile Time configuration constant
     to be used in '`if constexpr (...`' and '`static_assert`'.
  2. [Knob](@ref knb::Knob) - Run Time configuration constant.
+ 3. [Group](@ref knb::Group) - holds group of knobs and sub-groups,
+    forms hierarchical configuration tree.
 
 
 ## StaticKnob
@@ -45,7 +47,7 @@ bool some_function()
     }
 ```
 
-## Knob
+## Knob and Group
 
 The power of Knob is in its ability to form logical groups.
 

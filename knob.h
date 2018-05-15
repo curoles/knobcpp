@@ -15,8 +15,8 @@
  *     as a result shorter almost typeless code.
  */
 #pragma once
-#ifndef KNOB_H_INCLUDED
-#define KNOB_H_INCLUDED
+#ifndef KNOBCPP_KNOB_H_INCLUDED
+#define KNOBCPP_KNOB_H_INCLUDED
 
 #include <string>
 #include <vector>
@@ -24,6 +24,7 @@
 #include <tuple>
 #include <algorithm>
 #include <variant>
+#include <functional>
 
 #include "static_knob.h"
 
@@ -37,6 +38,7 @@ class Knob final
 {
     std::string name_;
     std::variant<bool,int,float,std::string> v;
+public:
     enum class T : std::size_t { Bool=0, Int, Float, String};
 public:
     Knob(const std::string& nm, bool  b):name_(nm),v(b){}
@@ -176,7 +178,12 @@ public:
 
         return std::make_tuple(false, "", Knob());
     }
-	
+
+    void visit(std::function<void(const Knob&)> visitor) const
+    {
+        for (const auto& name_knob : knobs_) visitor(name_knob.second);
+        for (const auto& name_group : groups_) name_group.second.visit(visitor);
+    }	
 };
 
 }

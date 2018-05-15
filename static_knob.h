@@ -15,8 +15,8 @@
  *
  */
 #pragma once
-#ifndef STATIC_KNOB_H_INCLUDED
-#define STATIC_KNOB_H_INCLUDED
+#ifndef KNOBCPP_STATIC_KNOB_H_INCLUDED
+#define KNOBCPP_STATIC_KNOB_H_INCLUDED
 
 #include <string>
 #include <vector>
