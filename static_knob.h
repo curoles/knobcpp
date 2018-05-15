@@ -119,20 +119,14 @@ public:
     constexpr bool operator==(strv v) const {return asString() == v;}
     constexpr bool operator!=(strv v) const {return asString() != v;}
 
-    friend constexpr bool operator==(const StaticKnob& k1, const StaticKnob& k2);
-    friend constexpr bool operator!=(const StaticKnob& k1, const StaticKnob& k2);
-    friend constexpr bool operator<=(const StaticKnob& k1, const StaticKnob& k2);
-    friend constexpr bool operator< (const StaticKnob& k1, const StaticKnob& k2);
-    friend constexpr bool operator>=(const StaticKnob& k1, const StaticKnob& k2);
-    friend constexpr bool operator> (const StaticKnob& k1, const StaticKnob& k2);
-};
+    constexpr bool operator< (const StaticKnob& other)const {return this->v <  other.v;}
+    constexpr bool operator<=(const StaticKnob& other)const {return this->v <= other.v;}
+    constexpr bool operator> (const StaticKnob& other)const {return this->v >  other.v;}
+    constexpr bool operator>=(const StaticKnob& other)const {return this->v >= other.v;}
+    constexpr bool operator==(const StaticKnob& other)const {return this->v == other.v;}
+    constexpr bool operator!=(const StaticKnob& other)const {return this->v != other.v;}
 
-constexpr bool operator==(const StaticKnob& k1, const StaticKnob& k2){return k1.v == k2.v;}
-constexpr bool operator!=(const StaticKnob& k1, const StaticKnob& k2){return k1.v != k2.v;}
-constexpr bool operator<=(const StaticKnob& k1, const StaticKnob& k2){return k1.v <= k2.v;}
-constexpr bool operator< (const StaticKnob& k1, const StaticKnob& k2){return k1.v <  k2.v;}
-constexpr bool operator>=(const StaticKnob& k1, const StaticKnob& k2){return k1.v >= k2.v;}
-constexpr bool operator> (const StaticKnob& k1, const StaticKnob& k2){return k1.v <  k2.v;}
+};
 
 /// KnobCpp library version defined as StaticKnob.
 constexpr StaticKnob knobCppLibraryVersion{"1.0"};

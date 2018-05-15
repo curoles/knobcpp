@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <tuple>
 #include <algorithm>
 #include <variant>
@@ -89,16 +90,16 @@ public:
 };
 
 
-/** Group/containers of knobs, has a name.
+/** Array of knobs.
  *
  * Facility to add a knob to the container and find a knob by its name.
  */
-class Group
+class Array
 {
     std::string name_;
     std::vector<Knob> knobs_;
 public:
-    explicit Group(const std::string& nm):name_(nm){}
+    explicit Array(const std::string& nm):name_(nm){}
 
     void addKnob(const Knob& kb){knobs_.push_back(kb);}
 
@@ -106,7 +107,8 @@ public:
     void addKnob(Args&&... args){knobs_.emplace_back(args...);}
 
 
-    std::tuple<bool,Knob> findKnob(std::string_view name){
+    std::tuple<bool,Knob> findKnob(std::string_view name) const
+    {
         auto knob = std::find_if(
                        std::begin(knobs_), std::end(knobs_),
                        [name](const Knob& k)->bool{return k.name()==name;}
@@ -116,8 +118,66 @@ public:
                                          std::make_tuple(true, *knob);
     }
 
+    const Knob& at(std::size_t pos) const {return knobs_.at(pos);}
+	
 };
 
+/** Hierarchy of groups of knobs.
+ *
+ */
+class Group
+{
+    std::string name_;
+    std::map<std::string,Knob> knobs_;
+    std::map<std::string,Group> groups_;
+
+public:
+    explicit Group(const std::string& nm):name_(nm){}
+
+    Group& addKnob(const Knob& kb){
+        knobs_.insert_or_assign(kb.name(), kb);
+        return *this;
+    }
+
+    template< class... Args >
+    Group& addKnob(const std::string& name, Args&&... args){
+        knobs_.try_emplace(name,name,args...);
+        return *this;
+    }
+
+    const Knob& at(const std::string& knobName) const {
+        return knobs_.at(knobName);
+    }
+
+    const Group& gr(const std::string& groupName) const {
+        return groups_.at(groupName);
+    }
+
+    Group& getGroup(const std::string& groupName) {
+        auto g = groups_.find(groupName);
+        if (g == std::end(groups_)) {
+            auto [ig, inserted] = groups_.emplace(groupName,groupName);
+            return (inserted)? ig->second : *this;
+        }
+        return g->second;
+    }
+
+    std::tuple<bool,std::string,Knob> findKnob(const std::string& name) const
+    {
+        if (const auto knob = knobs_.find(name); knob != std::end(knobs_)) {
+            return std::make_tuple(true, name_+":"+name, knob->second);
+        }
+
+        for (const auto& kv : groups_) {
+            if (auto [foundInSubgr, path, knob] = kv.second.findKnob(name); foundInSubgr) {
+                return std::make_tuple(true, name_+":"+path, knob);
+            }
+        }
+
+        return std::make_tuple(false, "", Knob());
+    }
+	
+};
 
 }
 

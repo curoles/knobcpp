@@ -46,3 +46,32 @@ bool some_function()
 ```
 
 ## Knob
+
+The power of Knob is in its ability to form logical groups.
+
+```cpp
+    Group knobs("root");
+    knobs.addKnob("version","1.2.3")
+         .addKnob("max", 100)
+         .addKnob("min",  10)
+         .addKnob("feature-A", true)
+         .addKnob("feature-B", true)
+    ;
+    knobs.getGroup("feature-A")
+        .addKnob("A-val1", 345)
+        .getGroup("A-X")
+            .addKnob("A-X-val2", 987)
+    ;
+    knobs.getGroup("feature-B")
+        .addKnob("B-val4", 4)
+    ;
+    knobs.getGroup("feature-C");
+
+    if (auto [ok, path, val] = knobs.findKnob("A-X-val2"); ok) {
+        std::cout << "path=" << path << " ,val=" << val.asString() << std::endl;
+        assert(path == "root:feature-A:A-X:A-X-val2");
+        assert((int)val == 987);
+    }
+```
+
+
