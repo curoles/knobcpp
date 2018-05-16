@@ -34,21 +34,25 @@ using str = std::string;
 using strv = std::string_view;
 using cstr = const char*;
 
+class Group;
+
 class Knob final
 {
     std::string name_;
     std::variant<bool,int,float,std::string> v;
+    std::string desc_;
 public:
     enum class T : std::size_t { Bool=0, Int, Float, String};
 public:
-    Knob(const std::string& nm, bool  b):name_(nm),v(b){}
-    Knob(const std::string& nm, int   i):name_(nm),v(i){}
-    Knob(const std::string& nm, float f):name_(nm),v(f){}
-    Knob(const std::string& nm, const str& s):name_(nm),v(s){}
+    Knob(const str& nm, bool  b, const str& d=""):name_(nm),v(b),desc_(d){}
+    Knob(const str& nm, int   i, const str& d=""):name_(nm),v(i),desc_(d){}
+    Knob(const str& nm, float f, const str& d=""):name_(nm),v(f),desc_(d){}
+    Knob(const str& nm, const str& s, const str& d=""):name_(nm),v(s),desc_(d){}
     //NOTE: next ctor is important, we need temp std::string, otherwise
     //Knob's copy/move ctor and op= do not work, exception -> variant looses
     //its value, gcc 7.3.
-    Knob(const std::string& nm, cstr  s):name_(nm),v(std::string(s)){}
+    Knob(const std::string& nm, cstr s, const str& d=""):
+        name_(nm),v(std::string(s)),desc_(d){}
     Knob():Knob("",false){}
 
     //Compiler made defaults for us already.
@@ -57,6 +61,7 @@ public:
     //Knob& operator=(const Knob&) = default;
 
     const std::string& name() const {return name_;}
+    const std::string& desc() const {return desc_;}
 
     Knob::T type() const {return static_cast<Knob::T>(v.index());}
     std::size_t typeId() const {return v.index();}
@@ -89,6 +94,7 @@ public:
     bool operator==(bool v) const {return asBool() == v;}
     bool operator!=(bool v) const {return asBool() != v;}
 
+    friend class knb::Group;
 };
 
 
@@ -133,8 +139,10 @@ class Group
     std::map<std::string,Knob> knobs_;
     std::map<std::string,Group> groups_;
 
+    bool immutable_;
 public:
-    explicit Group(const std::string& nm):name_(nm){}
+    explicit Group(const std::string& nm, bool immutable=true):
+        name_(nm),immutable_(immutable){}
 
     Group& addKnob(const Knob& kb){
         knobs_.insert_or_assign(kb.name(), kb);
@@ -164,10 +172,10 @@ public:
         return g->second;
     }
 
-    std::tuple<bool,std::string,Knob> findKnob(const std::string& name) const
+    std::tuple<bool,std::string,const Knob*> findKnob(const std::string& name) const
     {
         if (const auto knob = knobs_.find(name); knob != std::end(knobs_)) {
-            return std::make_tuple(true, name_+":"+name, knob->second);
+            return std::make_tuple(true, name_+":"+name, &(knob->second));
         }
 
         for (const auto& kv : groups_) {
@@ -176,14 +184,27 @@ public:
             }
         }
 
-        return std::make_tuple(false, "", Knob());
+        return std::make_tuple(false, "", nullptr);
     }
 
     void visit(std::function<void(const Knob&)> visitor) const
     {
         for (const auto& name_knob : knobs_) visitor(name_knob.second);
         for (const auto& name_group : groups_) name_group.second.visit(visitor);
-    }	
+    }
+
+    void finalize() { immutable_ = true; }
+
+    void changeValue(const Knob* knob, const std::string& s){
+        if (immutable_) return;
+        Knob* mutant = const_cast<Knob*>(knob);
+        switch (mutant->type()){
+        case Knob::T::Bool:   break;
+        case Knob::T::Int:    break;
+        case Knob::T::Float:  break;
+        case Knob::T::String: mutant->v = s; break; 
+        }
+    }
 };
 
 }

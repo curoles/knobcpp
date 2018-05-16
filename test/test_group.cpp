@@ -50,9 +50,9 @@ bool test_Knob_group()
     knobs.getGroup("feature-C");
 
     if (auto [ok, path, val] = knobs.findKnob("A-X-val2"); ok) {
-        std::cout << "path=" << path << " ,val=" << val.asString() << std::endl;
+        std::cout << "path=" << path << " ,val=" << val->asString() << std::endl;
         assert(path == "root:feature-A:A-X:A-X-val2");
-        assert((int)val == 987);
+        assert(val->asInt() == 987);
     }
 
     return true;
