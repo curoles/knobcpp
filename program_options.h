@@ -1,3 +1,20 @@
+/**
+ * @file
+ * @brief     Program options with Knob 
+ * @author    Igor Lesik
+ * @copyright 2018 Igor Lesik
+ *
+ * Program Options can be naturally implemented with Knob and Group, 
+ * conceptually program options are knobs.
+ *
+ * Knob has:
+ *  1. name and description
+ *  2. value type information
+ *  3. value
+ *
+ * Knob is ready to be used as an individual Program Option.
+ * Then Group can naturally be used as a container for Program Options.
+ */
 #pragma once
 #ifndef KNOBCPP_PROGRAM_OPTIONS_H_INCLUDED
 #define KNOBCPP_PROGRAM_OPTIONS_H_INCLUDED
@@ -8,6 +25,13 @@
 
 namespace knb {
 
+/** Prints knobs prepending name with `--`.
+ *
+ * Prints:
+ *  1. `--knob-name`
+ *  2. default knob value that also suggests the type
+ *  3. decsription string
+ */
 inline
 void printOptions(
     const knb::Group& knobs,
@@ -35,7 +59,9 @@ void printOptions(
     knobs.visit(printer);
 }
 
-/**
+/** Parse program options.
+ *
+ * Format: `--op1 op1val --op2 op2val --feature-a-bool --no-feature-b`
  *
  * @return tuple<ok,non-consumed-options>
  */
@@ -46,24 +72,30 @@ parseOptions(
     knb::Group& knobs ///< [in,out] changes per option
 )
 {
-    constexpr std::size_t prfx_sz = sizeof("--");
     std::vector<std::string> non_consumed;
     auto is_op = [](const std::string& s){
-        return s.size() > prfx_sz && s[0]=='-' && s[1]=='-';
+        return s.find("--") == 0;
     };
     bool waiting_for_val(false); const Knob* knob{nullptr};
     for (const auto& op : options) {
         if (waiting_for_val) { waiting_for_val = false;
             if (knob) knobs.changeValue(knob, op);
-        } else if (is_op(op)) { auto knob_name = op.substr(prfx_sz-1);
+        } else if (is_op(op)) {
+            auto knob_name = op.substr((op.find("--no-")==0)? 5:2);
             if (auto [found,p,k] = knobs.findKnob(knob_name); found){
-                waiting_for_val = true; knob = k; knob_name = p;
+                knob = k; knob_name = p;
+                if (waiting_for_val = (k->type()!=Knob::T::Bool); !waiting_for_val) {
+                    knobs.changeValue(knob, (op.find("--no-")==0)? "":"true");
+                }
             } else { non_consumed.push_back(op); }
         } else { non_consumed.push_back(op); }
     }
     return std::make_tuple(true, non_consumed);
 }
 
+/** Parse program options `(int argc, char** argv)`
+ *
+ */
 inline
 std::tuple<bool,std::vector<std::string> >
 parseOptions(int argc, char* argv[], knb::Group& knobs)

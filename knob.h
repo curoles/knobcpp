@@ -199,9 +199,9 @@ public:
         if (immutable_) return;
         Knob* mutant = const_cast<Knob*>(knob);
         switch (mutant->type()){
-        case Knob::T::Bool:   break;
-        case Knob::T::Int:    break;
-        case Knob::T::Float:  break;
+        case Knob::T::Bool:   mutant->v = !s.empty(); break;
+        case Knob::T::Int:    mutant->v = std::stoi(s); break;
+        case Knob::T::Float:  mutant->v = std::stof(s); break;
         case Knob::T::String: mutant->v = s; break; 
         }
     }

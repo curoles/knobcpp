@@ -25,7 +25,9 @@ KnobCpp provides following facilities:
     to be used in '`if constexpr (...`' and '`static_assert`'.
  2. [Knob](@ref knb::Knob) - Run Time configuration constant.
  3. [Group](@ref knb::Group) - holds group of knobs and sub-groups,
-    forms hierarchical configuration tree.
+    forms hierarchical configuration tree. 
+ 4. Print group as if it holds program options
+    and parse program options with changing values of knobs inside the group.
 
 
 ## StaticKnob
@@ -70,10 +72,80 @@ The power of Knob is in its ability to form logical groups.
     knobs.getGroup("feature-C");
 
     if (auto [ok, path, val] = knobs.findKnob("A-X-val2"); ok) {
-        std::cout << "path=" << path << " ,val=" << val.asString() << std::endl;
+        std::cout << "path=" << path << " ,val=" << val->asString() << std::endl;
         assert(path == "root:feature-A:A-X:A-X-val2");
-        assert((int)val == 987);
+        assert(val->asInt() == 987);
     }
+```
+
+## Program Options
+
+Program options are conceptually knobs. It is easy to apply Knob and Group
+do implement Program Options.
+Function `knb::printOptions(knobs)` prints all knobs as program options
+prepending each knob name with `--`.
+Function `knb::parseOptions(options, knobs)` parses array of input strings
+and saves options into knobs.
+
+Create knobs:
+
+```cpp
+    knb::Group knobs("test", false);
+    knobs.addKnob("version", "1.2.3", "Program version")
+         .addKnob("max",         100, "max value of ...")
+         .addKnob("min",          10, "min value of ...")
+         .addKnob("feature-A",  true, "Enable feature A")
+         .addKnob("feature-B", false, "Enable feature B")
+    ;
+    knobs.getGroup("feature-A")
+        .addKnob("A-val1", 345, "Feature A value of ...")
+        .getGroup("A-X")
+            .addKnob("A-X-val2", 987, "Feature B value of ...")
+    ;
+    knobs.getGroup("feature-B")
+        .addKnob("B-val4", 4, "Feature B val4 ...")
+    ;
+    knobs.getGroup("feature-C")
+        .addKnob("C-val5", 21.87f, "C val5 ...")
+    ;
+
+    knb::printOptions(knobs, std::cout, 50);
+```
+
+The output looks like:
+
+```terminal
+--feature-A
+  Enable feature A
+--no-feature-B
+  Enable feature B
+--max [100]
+  max value of ...
+--min [10]
+  min value of ...
+--version ["1.2.3"]
+  Program version
+--A-val1 [345]
+  Feature A value of ...
+--A-X-val2 [987]
+  Feature B value of ...
+--B-val4 [4]
+  Feature B val4 ...
+--C-val5 [21.870001]
+  C val5 ...
+```
+
+Call `parseOptions()`, finalize knobs to make them immutable.
+```cpp
+    std::vector<std::string> options{
+        "--max","200", "--version","10.20.30",
+        "--unknown1", "unknown2", "--no-feature-A", "--feature-B",
+        "--A-X-val2", "789", "--C-val5", "87.21"
+    };
+
+    knb::parseOptions(options, knobs);
+
+    knobs.finalize();
 ```
 
 
