@@ -1,6 +1,8 @@
 # KnobCpp - configuration knobs for C++ program 
 Knobs are program input parameters to control setup
-and run time execution flow. 
+and run time execution flow.
+
+By Igor Lesik 2018. 
 
 ![Online documentation](https://codedocs.xyz/curoles/knobcpp.svg)
 
