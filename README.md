@@ -4,9 +4,11 @@ and run time execution flow.
 
 By Igor Lesik 2018. 
 
-![Online documentation](https://codedocs.xyz/curoles/knobcpp.svg)
+[![Online documentation](https://codedocs.xyz/curoles/knobcpp.svg)](https://codedocs.xyz/curoles/knobcpp)
+[![Build Status](https://travis-ci.org/curoles/knobcpp.svg?branch=master)](https://travis-ci.org/curoles/knobcpp)
 
-Online documentation available at [CodeDocs](https://codedocs.xyz/curoles/knobcpp/)
+Online documentation available at [CodeDocs](https://codedocs.xyz/curoles/knobcpp/).
+Continuous Integration at [Travis](https://travis-ci.org/curoles/knobcpp).
 
 Why? Many programs to run multi-parameter experiments require configuration knobs.
 When there are many knobs and they all implemented as global variables,
